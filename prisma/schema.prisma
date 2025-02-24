@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Claim {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  amount      Decimal   @map("amount")
+  description String
+  claimType   String    @map("claim_type")
+  status      String    @default("PENDING")
+  submittedAt DateTime  @default(now()) @map("submitted_at")
+  approvedAt  DateTime? @map("approved_at")
+  approvedBy  String?   @map("approved_by")
+  createdAt   DateTime  @default(now()) @map("created_at")
+}
+
+model ClaimType {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  maxAmount   Decimal?
+  createdAt   DateTime @default(now()) @map("created_at")
+}
+
+model LeaveType {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+}
+
+model LeaveRequest {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  leaveTypeId String   @map("leave_type_id")
+  startDate   DateTime @map("start_date")
+  endDate     DateTime @map("end_date")
+  status      String   @default("pending")
+  reason      String?
+  department  String?
+  createdAt   DateTime @default(now()) @map("created_at")
+}
+
+model LeaveBalance {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  leaveTypeId String   @map("leave_type_id")
+  year        Int
+  totalDays   Int      @map("total_days")
+  usedDays    Int      @default(0) @map("used_days")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, leaveTypeId, year])
+}
+
+model PaySchedule {
+  id                     String   @id @default(uuid())
+  code                   String   @unique
+  name                   String
+  isPublicHolidayWorking Boolean  @default(false) @map("is_public_holiday_working")
+  holidayGroup           String   @map("holiday_group")
+  workingDays            Float    @map("working_days")
+  weekSchedule           Json     @map("week_schedule")
+  payCycleStart          Int      @map("pay_cycle_start")
+  payCycleEnd            Int      @map("pay_cycle_end")
+  createdBy              String   @map("created_by")
+  createdAt              DateTime @default(now()) @map("created_at")
+}
+
+model Subscription {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  tmsExpiry       DateTime? @map("tms_expiry")
+  payExpiry       DateTime? @map("pay_expiry")
+  leaveExpiry     DateTime? @map("leave_expiry")
+  claimExpiry     DateTime? @map("claim_expiry")
+  hrExpiry        DateTime? @map("hr_expiry")
+  appraisalExpiry DateTime? @map("appraisal_expiry")
+  createdAt       DateTime  @default(now()) @map("created_at")
+}
+
+model Attendance {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  date      DateTime
+  shift     String
+  clockIn   DateTime? @map("clock_in")
+  clockOut  DateTime? @map("clock_out")
+  status    String?
+  createdAt DateTime  @default(now()) @map("created_at")
+}
