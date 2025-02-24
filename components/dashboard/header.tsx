@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 import {
   Bell,
   Gift,
@@ -15,16 +17,24 @@ import {
   FileText,
   Award,
   Users,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import ReferEarnButton from "@/components/referral/refer-earn-button";
 
-// Define menu items with their sub-items
+// Define menu items with their sub-items (from the first implementation)
 const menuItems = [
   { name: "Home", href: "/dashboard", subItems: [] },
   {
@@ -120,7 +130,7 @@ const menuItems = [
     href: "/dashboard",
     subItems: [
       { name: "Employee Master", href: "/employee-setup/add" },
-      { name: "IImport Employee Profile", href: "/employee-setup/list" },
+      { name: "Import Employee Profile", href: "/employee-setup/list" },
     ],
   },
   {
@@ -131,7 +141,7 @@ const menuItems = [
       { name: "By Department", href: "/employee-setup/list" },
       { name: "Staff Bulk Attendance", href: "/employee-setup/list" },
       { name: "Attendance Request Approval", href: "/employee-setup/list" },
-      { name: "Attendance OT APprove/Reject", href: "/employee-setup/list" },
+      { name: "Attendance OT Approve/Reject", href: "/employee-setup/list" },
     ],
   },
   {
@@ -241,12 +251,19 @@ export default function DashboardHeader({
   user: any;
   title?: string;
 }) {
+  const router = useRouter();
   const [currentYear] = useState(new Date().getFullYear());
   const [currentMonth] = useState(
     new Date().toLocaleString("default", { month: "long" })
   );
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [hoveredSubItem, setHoveredSubItem] = useState<string | null>(null);
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
+  };
 
   // Function to render nested submenus with hover effects
   const renderSubMenu = (parentItem: any) => {
@@ -311,36 +328,94 @@ export default function DashboardHeader({
             <span>{currentYear}</span>
             <span>{currentMonth}</span>
           </div>
-          <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
-          </Button>
+
+          {/* Notification Dropdown */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Bell className="h-5 w-5" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-80">
+              <div className="space-y-4">
+                <h3 className="font-semibold">
+                  Latest Notifications & Activities
+                </h3>
+                <div className="text-sm text-muted-foreground">
+                  No new notifications
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+
           <Button variant="ghost" size="icon">
             <Settings className="h-5 w-5" />
           </Button>
+
+          {/* User Profile Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative">
+              <Button variant="ghost" className="flex items-center space-x-2">
                 <User className="h-5 w-5" />
+                <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-56 bg-white shadow-md rounded-md border border-gray-200 p-1"
-            >
-              {moduleLinks.map(({ icon: Icon, label, href }) => (
-                <DropdownMenuItem
-                  key={label}
-                  asChild
-                  className="rounded hover:bg-blue-50"
+            <DropdownMenuContent align="end" className="w-80">
+              <div className="flex items-center space-x-2 p-4">
+                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
+                  <User className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h4 className="font-semibold">DANIEL J</h4>
+                  <p className="text-sm text-muted-foreground">
+                    USER COMPANY: NONE
+                  </p>
+                </div>
+              </div>
+              <DropdownMenuSeparator />
+              <div className="p-4 space-y-2">
+                <p className="text-sm">USER APP RIGHT: SUPER USER</p>
+                <p className="text-sm">ACCESS RIGHT CODE: ALL</p>
+              </div>
+              <DropdownMenuSeparator />
+              <div className="p-2">
+                <Button
+                  variant="secondary"
+                  className="w-full justify-start"
+                  onClick={() => router.push("/account")}
                 >
+                  MANAGE ACCOUNT
+                </Button>
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-red-600 cursor-pointer"
+                onClick={handleLogout}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Log Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Module Switcher Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <div className="relative">
+                  <Users className="h-5 w-5" />
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              {moduleLinks.map(({ icon: Icon, label, href }) => (
+                <DropdownMenuItem key={label} asChild>
                   <Link
                     href={href}
-                    className="flex items-center space-x-3 px-3 py-2"
+                    className="flex items-center space-x-2 px-2 py-2"
                   >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <span className="font-medium">{label}</span>
+                    <Icon className="h-5 w-5" />
+                    <span>{label}</span>
                   </Link>
                 </DropdownMenuItem>
               ))}
@@ -348,6 +423,8 @@ export default function DashboardHeader({
           </DropdownMenu>
         </div>
       </div>
+
+      {/* Navigation Bar with Dropdowns */}
       <nav className="border-t border-blue-600 relative">
         <div className="flex items-center justify-between px-4">
           <div className="flex space-x-6 py-2">
@@ -377,10 +454,11 @@ export default function DashboardHeader({
               </div>
             ))}
           </div>
-          <Button className="bg-yellow-500 text-black hover:bg-yellow-400 transition-colors duration-200">
+
+          <ReferEarnButton className="bg-yellow-500 text-black hover:bg-yellow-400 transition-colors duration-200">
             <Gift className="mr-2 h-4 w-4" />
             REFER AND EARN
-          </Button>
+          </ReferEarnButton>
         </div>
       </nav>
     </header>

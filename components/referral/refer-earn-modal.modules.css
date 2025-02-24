@@ -1,0 +1,42 @@
+@media (max-width: 640px) {
+    .dialogContent {
+      width: 95%;
+      padding: 1rem;
+    }
+  
+    .grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  
+    .iconContainer {
+      width: 64px;
+      height: 64px;
+    }
+  }
+  
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .dialogContent {
+      width: 90%;
+      max-width: 600px;
+    }
+  
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4rem;
+    }
+  }
+  
+  @media (min-width: 1025px) {
+    .dialogContent {
+      width: 90%;
+      max-width: 800px;
+    }
+  
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6rem;
+    }
+  }
+  
+  

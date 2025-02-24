@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import DashboardHeader from "@/components/dashboard/header";
-import PayScheduleForm from "@/components/payroll/pay-schedule-form";
+import AppraisalDashboard from "@/components/appraisal/appraisal-dashboard";
 
-export default async function PayrollPage() {
+export default async function AppraisalPage() {
   const supabase = createClient();
   const {
     data: { user },
@@ -13,11 +13,17 @@ export default async function PayrollPage() {
     redirect("/");
   }
 
+  // Fetch appraisal data
+  const { data: appraisals } = await supabase
+    .from("appraisals")
+    .select("*")
+    .eq("user_id", user.id);
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <DashboardHeader user={user} title="PAYROLL SOFTWARE" />
+      <DashboardHeader user={user} title="APPRAISAL SOFTWARE" />
       <main className="p-4">
-        <PayScheduleForm userId={user.id} />
+        <AppraisalDashboard appraisals={appraisals || []} userId={user.id} />
       </main>
     </div>
   );
