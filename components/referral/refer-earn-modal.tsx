@@ -19,7 +19,7 @@ export default function ReferEarnModal({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] lg:max-w-[800px] w-[95%] sm:w-[90%] p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold text-yellow-500">
             REFER & EARN
@@ -33,9 +33,9 @@ export default function ReferEarnModal({
           </Button>
         </DialogHeader>
 
-        <div className="grid grid-cols-3 gap-8 py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-16 lg:gap-24 py-8">
           <div className="text-center">
-            <div className="mx-auto w-24 h-24">
+            <div className="mx-auto w-16 h-16 sm:w-24 sm:h-24">
               <Image
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202025-02-23%20223111-pDP0vcAw3dfGbIcUxpdRFhpL9IXsuI.png"
                 alt="Refer"
@@ -50,7 +50,7 @@ export default function ReferEarnModal({
             </p>
           </div>
           <div className="text-center">
-            <div className="mx-auto w-24 h-24">
+            <div className="mx-auto w-16 h-16 sm:w-24 sm:h-24">
               <Image
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202025-02-23%20223111-pDP0vcAw3dfGbIcUxpdRFhpL9IXsuI.png"
                 alt="Successful Referral"
@@ -64,7 +64,7 @@ export default function ReferEarnModal({
             </h3>
           </div>
           <div className="text-center">
-            <div className="mx-auto w-24 h-24">
+            <div className="mx-auto w-16 h-16 sm:w-24 sm:h-24">
               <Image
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202025-02-23%20223111-pDP0vcAw3dfGbIcUxpdRFhpL9IXsuI.png"
                 alt="Earn"

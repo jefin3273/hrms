@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,7 +14,7 @@ datasource db {
 model Claim {
   id          String    @id @default(uuid())
   userId      String    @map("user_id")
-  amount      Decimal   @map("amount")
+  amount      Decimal   @db.Decimal(10, 2)
   description String
   claimType   String    @map("claim_type")
   status      String    @default("PENDING")
@@ -31,39 +28,114 @@ model ClaimType {
   id          String   @id @default(uuid())
   name        String
   description String?
-  maxAmount   Decimal?
+  maxAmount   Decimal? @map("max_amount") @db.Decimal(10, 2)
   createdAt   DateTime @default(now()) @map("created_at")
+}
+
+model Company {
+  id              String        @id @default(uuid())
+  code            String        @unique
+  name            String
+  address         String?
+  address1        String?
+  address2        String?
+  city            String?
+  state           String?
+  postalCode      String?       @map("postal_code")
+  logoUrl         String?       @map("logo_url")
+  infoUpdated     Boolean       @default(false) @map("info_updated")
+  notifications   Json          @default("{}") @db.JsonB
+  dailyRate       String        @default("calendar") @map("daily_rate")
+  epf             Json          @default("{}") @db.JsonB
+  esi             Json          @default("{}") @db.JsonB
+  professionalTax Json          @default("{}") @map("professional_tax") @db.JsonB
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @default(now()) @map("updated_at")
+  companyUsers    CompanyUser[]
+}
+
+model CompanyUser {
+  id        String   @id @default(uuid())
+  companyId String   @map("company_id")
+  userId    String   @map("user_id")
+  role      String
+  createdAt DateTime @default(now()) @map("created_at")
+  company   Company  @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, userId])
 }
 
 model LeaveType {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  createdAt   DateTime @default(now()) @map("created_at")
+  id            String         @id @default(uuid())
+  name          String
+  description   String?
+  createdAt     DateTime       @default(now()) @map("created_at")
+  leaveRequests LeaveRequest[]
+  leaveBalances LeaveBalance[]
 }
 
 model LeaveRequest {
-  id          String   @id @default(uuid())
-  userId      String   @map("user_id")
-  leaveTypeId String   @map("leave_type_id")
-  startDate   DateTime @map("start_date")
-  endDate     DateTime @map("end_date")
-  status      String   @default("pending")
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  leaveTypeId String    @map("leave_type_id")
+  startDate   DateTime  @map("start_date") @db.Date
+  endDate     DateTime  @map("end_date") @db.Date
+  status      String    @default("pending")
   reason      String?
   department  String?
-  createdAt   DateTime @default(now()) @map("created_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  leaveType   LeaveType @relation(fields: [leaveTypeId], references: [id])
 }
 
 model LeaveBalance {
-  id          String   @id @default(uuid())
-  userId      String   @map("user_id")
-  leaveTypeId String   @map("leave_type_id")
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  leaveTypeId String    @map("leave_type_id")
   year        Int
-  totalDays   Int      @map("total_days")
-  usedDays    Int      @default(0) @map("used_days")
-  createdAt   DateTime @default(now()) @map("created_at")
+  totalDays   Int       @map("total_days")
+  usedDays    Int       @default(0) @map("used_days")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  leaveType   LeaveType @relation(fields: [leaveTypeId], references: [id])
 
   @@unique([userId, leaveTypeId, year])
+}
+
+model Department {
+  id        String    @id @default(uuid())
+  code      String    @unique
+  name      String
+  createdAt DateTime  @default(now()) @map("created_at")
+  sections  Section[]
+}
+
+model Designation {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+}
+
+model Section {
+  id           String     @id @default(uuid())
+  code         String     @unique
+  name         String
+  departmentId String     @map("department_id")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  department   Department @relation(fields: [departmentId], references: [id])
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+}
+
+model ExtraClassification {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
 }
 
 model PaySchedule {
@@ -72,8 +144,8 @@ model PaySchedule {
   name                   String
   isPublicHolidayWorking Boolean  @default(false) @map("is_public_holiday_working")
   holidayGroup           String   @map("holiday_group")
-  workingDays            Float    @map("working_days")
-  weekSchedule           Json     @map("week_schedule")
+  workingDays            Decimal  @map("working_days") @db.Decimal(3, 1)
+  weekSchedule           Json     @map("week_schedule") @db.JsonB
   payCycleStart          Int      @map("pay_cycle_start")
   payCycleEnd            Int      @map("pay_cycle_end")
   createdBy              String   @map("created_by")
@@ -95,7 +167,7 @@ model Subscription {
 model Attendance {
   id        String    @id @default(uuid())
   userId    String    @map("user_id")
-  date      DateTime
+  date      DateTime  @db.Date
   shift     String
   clockIn   DateTime? @map("clock_in")
   clockOut  DateTime? @map("clock_out")
