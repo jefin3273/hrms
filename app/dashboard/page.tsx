@@ -13,13 +13,6 @@ export default async function DashboardPage() {
     redirect("/");
   }
 
-  // Fetch subscription data
-  const { data: subscriptions } = await supabase
-    .from("subscriptions")
-    .select("*")
-    .eq("user_id", user.id)
-    .single();
-
   return (
     <div className="min-h-screen bg-gray-50">
       <DashboardHeader user={user} />

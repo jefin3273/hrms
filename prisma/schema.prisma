@@ -11,6 +11,29 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// Add this model to your schema.prisma file
+
+model User {
+  id            String         @id
+  name          String?
+  email         String?        @unique
+  emailVerified DateTime?      @map("email_verified")
+  image         String?
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  attendance    Attendance[]
+  claims        Claim[]
+  leaveRequests LeaveRequest[]
+  leaveBalances LeaveBalance[]
+  companyUsers  CompanyUser[]
+  subscriptions Subscription[]
+  meetings      Meeting[]
+  grievances    Grievance[]
+  trainings     Training[]
+
+  @@map("users")
+}
+
 model Claim {
   id          String    @id @default(uuid())
   userId      String    @map("user_id")
@@ -22,6 +45,7 @@ model Claim {
   approvedAt  DateTime? @map("approved_at")
   approvedBy  String?   @map("approved_by")
   createdAt   DateTime  @default(now()) @map("created_at")
+  User        User      @relation(fields: [userId], references: [id])
 }
 
 model ClaimType {
@@ -61,6 +85,7 @@ model CompanyUser {
   role      String
   createdAt DateTime @default(now()) @map("created_at")
   company   Company  @relation(fields: [companyId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
 
   @@unique([companyId, userId])
 }
@@ -85,6 +110,7 @@ model LeaveRequest {
   department  String?
   createdAt   DateTime  @default(now()) @map("created_at")
   leaveType   LeaveType @relation(fields: [leaveTypeId], references: [id])
+  User        User      @relation(fields: [userId], references: [id])
 }
 
 model LeaveBalance {
@@ -96,6 +122,7 @@ model LeaveBalance {
   usedDays    Int       @default(0) @map("used_days")
   createdAt   DateTime  @default(now()) @map("created_at")
   leaveType   LeaveType @relation(fields: [leaveTypeId], references: [id])
+  User        User      @relation(fields: [userId], references: [id])
 
   @@unique([userId, leaveTypeId, year])
 }
@@ -162,6 +189,7 @@ model Subscription {
   hrExpiry        DateTime? @map("hr_expiry")
   appraisalExpiry DateTime? @map("appraisal_expiry")
   createdAt       DateTime  @default(now()) @map("created_at")
+  User            User      @relation(fields: [userId], references: [id])
 }
 
 model Attendance {
@@ -173,6 +201,7 @@ model Attendance {
   clockOut  DateTime? @map("clock_out")
   status    String?
   createdAt DateTime  @default(now()) @map("created_at")
+  User      User      @relation(fields: [userId], references: [id])
 }
 
 model Meeting {
@@ -185,6 +214,7 @@ model Meeting {
   endTime     DateTime @map("end_time")
   type        String // "meeting" or "training"
   createdAt   DateTime @default(now()) @map("created_at")
+  User        User     @relation(fields: [userId], references: [id])
 }
 
 model Grievance {
@@ -197,6 +227,7 @@ model Grievance {
   submittedAt DateTime  @default(now()) @map("submitted_at")
   resolvedAt  DateTime? @map("resolved_at")
   createdAt   DateTime  @default(now()) @map("created_at")
+  User        User      @relation(fields: [userId], references: [id])
 }
 
 model Training {
@@ -211,4 +242,5 @@ model Training {
   expiryDate  DateTime? @map("expiry_date")
   completedAt DateTime? @map("completed_at")
   createdAt   DateTime  @default(now()) @map("created_at")
+  User        User      @relation(fields: [userId], references: [id])
 }

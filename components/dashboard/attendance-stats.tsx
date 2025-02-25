@@ -1,15 +1,282 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Download, RefreshCw } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import NoDataPlaceholder from "@/components/dashboard/no-data-placeholder"
+import { useState, useEffect } from "react";
+import { Download, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import NoDataPlaceholder from "@/components/dashboard/no-data-placeholder";
+import { format, parseISO } from "date-fns";
+
+// Type definitions based on Prisma schema
+type Attendance = {
+  id: string;
+  userId: string;
+  date: string;
+  shift: string;
+  clockIn: string | null;
+  clockOut: string | null;
+  status: string | null;
+  createdAt: string;
+};
+
+type AttendanceSummary = {
+  total: number;
+  present: number;
+  absent: number;
+  late: number;
+  earlyOut: number;
+  overtime: number;
+};
+
+type EmployeeAttendance = {
+  userId: string;
+  name: string;
+  status: string;
+  shift: string;
+  clockIn: string | null;
+  clockOut: string | null;
+};
 
 export default function AttendanceStats({ userId }: { userId: string }) {
-  const [selectedDate, setSelectedDate] = useState<string>("2024-02-19")
-  const [selectedShift, setSelectedShift] = useState<string>("all")
+  const [selectedDate, setSelectedDate] = useState<string>(
+    format(new Date(), "yyyy-MM-dd")
+  );
+  const [selectedShift, setSelectedShift] = useState<string>("all");
+  const [attendances, setAttendances] = useState<Attendance[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [summary, setSummary] = useState<AttendanceSummary>({
+    total: 0,
+    present: 0,
+    absent: 0,
+    late: 0,
+    earlyOut: 0,
+    overtime: 0,
+  });
+  const [employeeAttendances, setEmployeeAttendances] = useState<
+    EmployeeAttendance[]
+  >([]);
+  const [flaggedEmployees, setFlaggedEmployees] = useState<
+    EmployeeAttendance[]
+  >([]);
+
+  // Fetch attendance data when date or shift changes
+  useEffect(() => {
+    const fetchAttendanceData = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch attendance records from API
+        const response = await fetch(
+          `/api/attendance?date=${selectedDate}&shift=${selectedShift}&userId=${userId}`
+        );
+        if (!response.ok) throw new Error("Failed to fetch attendance data");
+
+        const data = await response.json();
+        setAttendances(data.attendances);
+        setSummary(data.summary);
+        setEmployeeAttendances(data.employeeAttendances);
+        setFlaggedEmployees(data.flaggedEmployees);
+      } catch (error) {
+        console.error("Error fetching attendance data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAttendanceData();
+  }, [selectedDate, selectedShift, userId]);
+
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    try {
+      // Fetch fresh attendance data
+      const response = await fetch(
+        `/api/attendance?date=${selectedDate}&shift=${selectedShift}&userId=${userId}&refresh=true`
+      );
+      if (!response.ok) throw new Error("Failed to refresh attendance data");
+
+      const data = await response.json();
+      setAttendances(data.attendances);
+      setSummary(data.summary);
+      setEmployeeAttendances(data.employeeAttendances);
+      setFlaggedEmployees(data.flaggedEmployees);
+    } catch (error) {
+      console.error("Error refreshing attendance data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDownload = (reportType: string) => {
+    // Download attendance report as CSV
+    window.open(
+      `/api/attendance/download?date=${selectedDate}&shift=${selectedShift}&type=${reportType}&userId=${userId}`,
+      "_blank"
+    );
+  };
+
+  // Render attendance status summary cards
+  const renderAttendanceSummary = () => {
+    if (summary.total === 0) return <NoDataPlaceholder />;
+
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="text-blue-500 font-medium">Total</div>
+          <div className="text-2xl font-bold">{summary.total}</div>
+        </div>
+        <div className="bg-green-50 p-4 rounded-lg">
+          <div className="text-green-500 font-medium">Present</div>
+          <div className="text-2xl font-bold">{summary.present}</div>
+        </div>
+        <div className="bg-red-50 p-4 rounded-lg">
+          <div className="text-red-500 font-medium">Absent</div>
+          <div className="text-2xl font-bold">{summary.absent}</div>
+        </div>
+        <div className="bg-yellow-50 p-4 rounded-lg">
+          <div className="text-yellow-500 font-medium">Late</div>
+          <div className="text-2xl font-bold">{summary.late}</div>
+        </div>
+        <div className="bg-orange-50 p-4 rounded-lg">
+          <div className="text-orange-500 font-medium">Early Out</div>
+          <div className="text-2xl font-bold">{summary.earlyOut}</div>
+        </div>
+        <div className="bg-purple-50 p-4 rounded-lg">
+          <div className="text-purple-500 font-medium">Overtime</div>
+          <div className="text-2xl font-bold">{summary.overtime}</div>
+        </div>
+      </div>
+    );
+  };
+
+  // Render employee attendance table
+  const renderEmployeeAttendance = () => {
+    if (employeeAttendances.length === 0) return <NoDataPlaceholder />;
+
+    return (
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b">
+              <th className="text-left py-2">Employee</th>
+              <th className="text-left py-2">Shift</th>
+              <th className="text-left py-2">Status</th>
+              <th className="text-left py-2">Clock In</th>
+              <th className="text-left py-2">Clock Out</th>
+            </tr>
+          </thead>
+          <tbody>
+            {employeeAttendances.map((employee) => (
+              <tr key={employee.userId} className="border-b hover:bg-gray-50">
+                <td className="py-2">{employee.name}</td>
+                <td className="py-2">{employee.shift}</td>
+                <td className="py-2">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs ${
+                      employee.status === "present"
+                        ? "bg-green-100 text-green-800"
+                        : employee.status === "absent"
+                        ? "bg-red-100 text-red-800"
+                        : employee.status === "late"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    {employee.status.charAt(0).toUpperCase() +
+                      employee.status.slice(1)}
+                  </span>
+                </td>
+                <td className="py-2">
+                  {employee.clockIn
+                    ? format(parseISO(employee.clockIn), "hh:mm a")
+                    : "-"}
+                </td>
+                <td className="py-2">
+                  {employee.clockOut
+                    ? format(parseISO(employee.clockOut), "hh:mm a")
+                    : "-"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
+  // Render flagged employees (Late, Early Out, Overtime)
+  const renderFlaggedEmployees = () => {
+    if (flaggedEmployees.length === 0) return <NoDataPlaceholder />;
+
+    return (
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b">
+              <th className="text-left py-2">Employee</th>
+              <th className="text-left py-2">Issue</th>
+              <th className="text-left py-2">Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {flaggedEmployees.map((employee, index) => (
+              <tr
+                key={`${employee.userId}-${index}`}
+                className="border-b hover:bg-gray-50"
+              >
+                <td className="py-2">{employee.name}</td>
+                <td className="py-2">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs ${
+                      employee.status === "late"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : employee.status === "earlyOut"
+                        ? "bg-orange-100 text-orange-800"
+                        : employee.status === "overtime"
+                        ? "bg-purple-100 text-purple-800"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    {employee.status === "late"
+                      ? "Late"
+                      : employee.status === "earlyOut"
+                      ? "Early Out"
+                      : employee.status === "overtime"
+                      ? "Overtime"
+                      : employee.status}
+                  </span>
+                </td>
+                <td className="py-2">
+                  {employee.status === "late" && employee.clockIn
+                    ? `Arrived at ${format(
+                        parseISO(employee.clockIn),
+                        "hh:mm a"
+                      )}`
+                    : employee.status === "earlyOut" && employee.clockOut
+                    ? `Left at ${format(
+                        parseISO(employee.clockOut),
+                        "hh:mm a"
+                      )}`
+                    : employee.status === "overtime" && employee.clockOut
+                    ? `Worked until ${format(
+                        parseISO(employee.clockOut),
+                        "hh:mm a"
+                      )}`
+                    : "-"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -37,18 +304,37 @@ export default function AttendanceStats({ userId }: { userId: string }) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Daily Shifts/Schedules Employee Attendance status</CardTitle>
+          <CardTitle>
+            Daily Shifts/Schedules Employee Attendance Status
+          </CardTitle>
           <div className="flex gap-2">
-            <Button variant="outline" size="icon">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => handleDownload("summary")}
+            >
               <Download className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon">
-              <RefreshCw className="h-4 w-4" />
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleRefresh}
+              disabled={isLoading}
+            >
+              <RefreshCw
+                className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+              />
             </Button>
           </div>
         </CardHeader>
         <CardContent>
-          <NoDataPlaceholder />
+          {isLoading ? (
+            <div className="flex justify-center py-6">
+              Loading attendance data...
+            </div>
+          ) : (
+            renderAttendanceSummary()
+          )}
         </CardContent>
       </Card>
 
@@ -57,16 +343,33 @@ export default function AttendanceStats({ userId }: { userId: string }) {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Employees Attendance</CardTitle>
             <div className="flex gap-2">
-              <Button variant="outline" size="icon">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => handleDownload("employees")}
+              >
                 <Download className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="icon">
-                <RefreshCw className="h-4 w-4" />
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleRefresh}
+                disabled={isLoading}
+              >
+                <RefreshCw
+                  className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                />
               </Button>
             </div>
           </CardHeader>
           <CardContent>
-            <NoDataPlaceholder />
+            {isLoading ? (
+              <div className="flex justify-center py-6">
+                Loading attendance data...
+              </div>
+            ) : (
+              renderEmployeeAttendance()
+            )}
           </CardContent>
         </Card>
 
@@ -74,20 +377,36 @@ export default function AttendanceStats({ userId }: { userId: string }) {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Employees Constantly [Early Out/Late/OT]</CardTitle>
             <div className="flex gap-2">
-              <Button variant="outline" size="icon">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => handleDownload("flagged")}
+              >
                 <Download className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="icon">
-                <RefreshCw className="h-4 w-4" />
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleRefresh}
+                disabled={isLoading}
+              >
+                <RefreshCw
+                  className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                />
               </Button>
             </div>
           </CardHeader>
           <CardContent>
-            <NoDataPlaceholder />
+            {isLoading ? (
+              <div className="flex justify-center py-6">
+                Loading attendance data...
+              </div>
+            ) : (
+              renderFlaggedEmployees()
+            )}
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }
-
