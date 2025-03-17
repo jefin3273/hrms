@@ -55,7 +55,7 @@ export default function LoginForm() {
         <div className="flex justify-center">
           <Image
             src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-F9D4ddrEGGEsQzz8ilIzEghEuUMTJc.png"
-            alt="DigiSME Logo"
+            alt="Jonseta Logo"
             width={150}
             height={50}
             className="object-contain"

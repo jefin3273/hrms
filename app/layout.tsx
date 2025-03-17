@@ -6,7 +6,7 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "DigiSME - HR Management System",
+  title: "Jonseta - HR Management System",
   description: "Complete HR Solution Tailor-made to suit Your Business Needs",
     generator: 'v0.dev'
 }
