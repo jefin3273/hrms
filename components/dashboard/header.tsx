@@ -366,7 +366,7 @@ export default function DashboardHeader({
                   <User className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-semibold">DANIEL J</h4>
+                  <h4 className="font-semibold">Jefin John</h4>
                   <p className="text-sm text-muted-foreground">
                     USER COMPANY: NONE
                   </p>

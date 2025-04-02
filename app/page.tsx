@@ -1,15 +1,15 @@
-import { redirect } from "next/navigation"
-import { createClient } from "@/utils/supabase/server"
-import LoginForm from "@/components/login-form"
+import { redirect } from "next/navigation";
+import { createClient } from "@/utils/supabase/server";
+import LoginForm from "@/components/login-form";
 
 export default async function Home() {
-  const supabase = createClient()
+  const supabase = createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   if (user) {
-    redirect("/dashboard")
+    redirect("/attendance");
   }
 
   return (
@@ -18,6 +18,5 @@ export default async function Home() {
         <LoginForm />
       </div>
     </main>
-  )
+  );
 }
-
