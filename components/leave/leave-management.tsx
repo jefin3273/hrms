@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import NoDataPlaceholder from "@/components/dashboard/no-data-placeholder";
+import NoDataPlaceholder from "@/components/attendance/no-data-placeholder";
 import { format, startOfMonth, endOfMonth, parseISO } from "date-fns";
 
 // Types based on your Prisma schema

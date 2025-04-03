@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import DashboardHeader from "@/components/dashboard/header";
+import DashboardHeader from "@/components/leave/header";
 import LeaveManagement from "@/components/leave/leave-management";
 
 export default async function LeavePage() {

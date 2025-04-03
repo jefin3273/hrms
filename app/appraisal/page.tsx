@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import DashboardHeader from "@/components/dashboard/header";
+import DashboardHeader from "@/components/appraisal/header";
 import AppraisalDashboard from "@/components/appraisal/appraisal-dashboard";
 
 export default async function AppraisalPage() {

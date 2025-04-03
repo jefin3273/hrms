@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import DashboardHeader from "@/components/dashboard/header";
-import ClaimsDashboard from "@/components/claims/claims-dashboard";
+import DashboardHeader from "@/components/claim/header";
+import ClaimsDashboard from "@/components/claim/claim-dashboard";
 
 export default async function ClaimPage() {
   const supabase = createClient();

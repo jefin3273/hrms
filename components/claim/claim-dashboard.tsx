@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import ClaimsSummaryTable from "./claims-summary-table";
+import ClaimsSummaryTable from "./claim-summary-table";
 import ClaimStatusCircles from "./claim-status-circles";
 
 ChartJS.register(

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import DashboardHeader from "@/components/dashboard/header";
+import DashboardHeader from "@/components/payroll/header";
 import PayScheduleForm from "@/components/payroll/pay-schedule-form";
 
 export default async function PayrollPage() {

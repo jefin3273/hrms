@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { prisma } from "@/lib/prisma";
-import DashboardHeader from "@/components/dashboard/header";
+import DashboardHeader from "@/components/hr/header";
 import HRDashboard from "@/components/hr/hr-dashboard";
 
 export default async function HRPage() {

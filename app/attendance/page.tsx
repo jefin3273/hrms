@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import DashboardHeader from "@/components/dashboard/header";
-import AttendanceStats from "@/components/dashboard/attendance-stats";
+import DashboardHeader from "@/components/attendance/header";
+import AttendanceStats from "@/components/attendance/attendance-stats";
 
 export default async function DashboardPage() {
   const supabase = createClient();

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import DashboardHeader from "@/components/dashboard/header";
+import DashboardHeader from "@/components/attendance/header";
 import CompanyMaster from "@/components/company/company-master";
 
 export default async function CompanyPage() {
