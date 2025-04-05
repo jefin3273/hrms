@@ -36,10 +36,10 @@ import ReferEarnButton from "@/components/referral/refer-earn-button";
 
 // Define menu items with their sub-items (from the first implementation)
 const menuItems = [
-  { name: "Home", href: "/dashboard", subItems: [] },
+  { name: "Home", href: "/attendance", subItems: [] },
   {
     name: "General Setup",
-    href: "/dashboard",
+    href: "/attendance",
     subItems: [
       { name: "Company", href: "/general-setup/company" },
       {
@@ -48,7 +48,7 @@ const menuItems = [
       },
       {
         name: "User Access",
-        href: "/dashboard",
+        href: "/attendance",
         subItems: [
           { name: "User Role", href: "/general-setup/user-role" },
           { name: "User Creation", href: "/general-setup/user-creation" },
@@ -60,7 +60,7 @@ const menuItems = [
       },
       {
         name: "Attendance Setup",
-        href: "/dashboard",
+        href: "/attendance",
         subItems: [
           { name: "Shift Master", href: "/general-setup/shift-master" },
           { name: "Auto Shift", href: "/general-setup/auto-shift" },
@@ -84,7 +84,7 @@ const menuItems = [
       },
       {
         name: "Tablet Setup",
-        href: "/dashboard",
+        href: "/attendance",
         subItems: [
           { name: "Tablet Registration", href: "/general-setup/shift-master" },
           { name: "Auto Shift", href: "/general-setup/auto-shift" },
@@ -104,7 +104,7 @@ const menuItems = [
       },
       {
         name: "Mobile Setup",
-        href: "/dashboard",
+        href: "/attendance",
         subItems: [
           { name: "Face Registration", href: "/general-setup/shift-master" },
           { name: "Auto Shift", href: "/general-setup/auto-shift" },
@@ -127,7 +127,7 @@ const menuItems = [
   },
   {
     name: "Employee Setup",
-    href: "/dashboard",
+    href: "/attendance",
     subItems: [
       { name: "Employee Master", href: "/employee-setup/add" },
       { name: "Import Employee Profile", href: "/employee-setup/list" },
@@ -135,7 +135,7 @@ const menuItems = [
   },
   {
     name: "Attendance Adjustment",
-    href: "/dashboard",
+    href: "/attendance",
     subItems: [
       { name: "By Individual", href: "/employee-setup/add" },
       { name: "By Department", href: "/employee-setup/list" },
@@ -146,12 +146,12 @@ const menuItems = [
   },
   {
     name: "Time Sheet",
-    href: "/dashboard",
+    href: "/attendance",
     subItems: [{ name: "Project Master", href: "/employee-setup/add" }],
   },
   {
     name: "Field Tracking",
-    href: "/dashboard",
+    href: "/attendance",
     subItems: [
       { name: "Lead Master", href: "/employee-setup/add" },
       { name: "Manage Appointments", href: "/employee-setup/add" },
@@ -159,7 +159,7 @@ const menuItems = [
   },
   {
     name: "Reports",
-    href: "/dashboard",
+    href: "/attendance",
     subItems: [
       { name: "Daily Attendance Report", href: "/employee-setup/add" },
       { name: "Individual Attendance Report", href: "/employee-setup/add" },
@@ -195,7 +195,7 @@ const menuItems = [
   },
   {
     name: "Help",
-    href: "/dashboard",
+    href: "/attendance",
     subItems: [
       { name: "Submit A Ticket", href: "/employee-setup/add" },
       { name: "Share Screen to Support", href: "/employee-setup/add" },
@@ -209,12 +209,12 @@ const menuItems = [
   },
   {
     name: "Billing",
-    href: "/dashboard",
+    href: "/attendance",
     subItems: [{ name: "Manage License", href: "/employee-setup/add" }],
   },
   {
     name: "InfoTech Support",
-    href: "/dashboard",
+    href: "/attendance",
     subItems: [
       { name: "Purge and Reprocess", href: "/employee-setup/add" },
       { name: "System Parameter", href: "/employee-setup/add" },
@@ -236,7 +236,7 @@ const menuItems = [
 ];
 
 const moduleLinks = [
-  { icon: Clock, label: "ATTENDANCE", href: "/dashboard" },
+  { icon: Clock, label: "ATTENDANCE", href: "/attendance" },
   { icon: Calendar, label: "LEAVE", href: "/leave" },
   { icon: DollarSign, label: "PAYROLL", href: "/payroll" },
   { icon: FileText, label: "CLAIM", href: "/claim" },
