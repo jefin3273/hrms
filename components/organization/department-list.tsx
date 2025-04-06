@@ -1,57 +1,62 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { createClient } from "@/utils/supabase/client"
-import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
-import DataTable from "./data-table"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import DepartmentForm from "./forms/department-form"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import DataTable from "./data-table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import DepartmentForm from "./forms/department-form";
 
 export default function DepartmentList({ initialData }: { initialData: any[] }) {
-  const [departments, setDepartments] = useState(initialData)
-  const [isOpen, setIsOpen] = useState(false)
-  const [editingDepartment, setEditingDepartment] = useState<any>(null)
-  const { toast } = useToast()
-  const supabase = createClient()
+  const [departments, setDepartments] = useState(initialData);
+  const [isOpen, setIsOpen] = useState(false);
+  const [editingDepartment, setEditingDepartment] = useState<any>(null);
+  const { toast } = useToast();
 
   const columns = [
     { key: "code", title: "Department Code" },
     { key: "name", title: "Department Name" },
-  ]
+  ];
 
   const handleEdit = (department: any) => {
-    setEditingDepartment(department)
-    setIsOpen(true)
-  }
+    setEditingDepartment(department);
+    setIsOpen(true);
+  };
 
   const handleDelete = async (department: any) => {
-    const { error } = await supabase.from("departments").delete().eq("id", department.id)
+    try {
+      const response = await fetch(`/api/departments?id=${department.id}`, {
+        method: 'DELETE',
+      });
 
-    if (error) {
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'An error occurred');
+      }
+
+      setDepartments(departments.filter((d) => d.id !== department.id));
+      toast({
+        title: "Success",
+        description: "Department deleted successfully",
+      });
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
         description: error.message,
-      })
-    } else {
-      setDepartments(departments.filter((d) => d.id !== department.id))
-      toast({
-        title: "Success",
-        description: "Department deleted successfully",
-      })
+      });
     }
-  }
+  };
 
   const handleSuccess = (updatedDepartment: any) => {
     if (editingDepartment) {
-      setDepartments(departments.map((d) => (d.id === updatedDepartment.id ? updatedDepartment : d)))
+      setDepartments(departments.map((d) => (d.id === updatedDepartment.id ? updatedDepartment : d)));
     } else {
-      setDepartments([...departments, updatedDepartment])
+      setDepartments([...departments, updatedDepartment]);
     }
-    setIsOpen(false)
-    setEditingDepartment(null)
-  }
+    setIsOpen(false);
+    setEditingDepartment(null);
+  };
 
   return (
     <div className="space-y-4">
@@ -77,13 +82,12 @@ export default function DepartmentList({ initialData }: { initialData: any[] }) 
             initialData={editingDepartment}
             onSuccess={handleSuccess}
             onCancel={() => {
-              setIsOpen(false)
-              setEditingDepartment(null)
+              setIsOpen(false);
+              setEditingDepartment(null);
             }}
           />
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
-

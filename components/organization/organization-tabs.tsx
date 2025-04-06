@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DepartmentList from "./department-list";
-// import DesignationList from "./designation-list"
-// import SectionList from "./section-list"
-// import CategoryList from "./category-list"
-// import ExtraClassificationList from "./extra-classification-list"
+import DesignationList from "./designation-list";
+import SectionList from "./section-list";
+import CategoryList from "./category-list";
+import ExtraClassificationList from "./extra-classification-list";
 
 interface OrganizationTabsProps {
   initialData: {
@@ -35,18 +35,23 @@ export default function OrganizationTabs({
       <TabsContent value="department">
         <DepartmentList initialData={initialData.departments} />
       </TabsContent>
-      {/* <TabsContent value="designation"> */}
-      {/* <DesignationList initialData={initialData.designations} />
+      <TabsContent value="designation">
+        <DesignationList initialData={initialData.designations} />
       </TabsContent>
       <TabsContent value="section">
-        <SectionList initialData={initialData.sections} departments={initialData.departments} />
+        <SectionList
+          initialData={initialData.sections}
+          departments={initialData.departments}
+        />
       </TabsContent>
       <TabsContent value="category">
         <CategoryList initialData={initialData.categories} />
       </TabsContent>
       <TabsContent value="extra">
-        <ExtraClassificationList initialData={initialData.extraClassifications} />
-      </TabsContent> */}
+        <ExtraClassificationList
+          initialData={initialData.extraClassifications}
+        />
+      </TabsContent>
     </Tabs>
   );
 }

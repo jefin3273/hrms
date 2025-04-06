@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import DashboardHeader from "@/components/attendance/header";
 import OrganizationTabs from "@/components/organization/organization-tabs";
+import { prisma } from "@/lib/prisma"; // Make sure you have a prisma client setup
 
 export default async function OrganizationHierarchyPage() {
   const supabase = createClient();
@@ -13,18 +14,16 @@ export default async function OrganizationHierarchyPage() {
     redirect("/");
   }
 
-  // Fetch initial data for all sections
-  const { data: departments } = await supabase.from("departments").select("*");
-  const { data: designations } = await supabase
-    .from("designations")
-    .select("*");
-  const { data: sections } = await supabase
-    .from("sections")
-    .select("*, departments(*)");
-  const { data: categories } = await supabase.from("categories").select("*");
-  const { data: extraClassifications } = await supabase
-    .from("extra_classifications")
-    .select("*");
+  // Fetch initial data using Prisma
+  const departments = await prisma.department.findMany();
+  const designations = await prisma.designation.findMany();
+  const sections = await prisma.section.findMany({
+    include: {
+      department: true,
+    },
+  });
+  const categories = await prisma.category.findMany();
+  const extraClassifications = await prisma.extraClassification.findMany();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -32,11 +31,11 @@ export default async function OrganizationHierarchyPage() {
       <main className="p-4">
         <OrganizationTabs
           initialData={{
-            departments: departments || [],
-            designations: designations || [],
-            sections: sections || [],
-            categories: categories || [],
-            extraClassifications: extraClassifications || [],
+            departments,
+            designations,
+            sections,
+            categories,
+            extraClassifications,
           }}
         />
       </main>

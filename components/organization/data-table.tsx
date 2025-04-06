@@ -1,37 +1,68 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Search } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState } from "react";
+import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-interface DataTableProps {
-  data: any[]
-  columns: {
-    key: string
-    title: string
-  }[]
-  onEdit: (item: any) => void
-  onDelete: (item: any) => void
-  searchPlaceholder: string
+interface Column {
+  key: string;
+  title: string;
+  render?: (value: any, row: any) => React.ReactNode;
 }
 
-export default function DataTable({ data, columns, onEdit, onDelete, searchPlaceholder }: DataTableProps) {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [pageSize, setPageSize] = useState(15)
-  const [currentPage, setCurrentPage] = useState(1)
+interface DataTableProps {
+  data: any[];
+  columns: Column[];
+  onEdit: (item: any) => void;
+  onDelete: (item: any) => void;
+  searchPlaceholder: string;
+}
+
+export default function DataTable({
+  data,
+  columns,
+  onEdit,
+  onDelete,
+  searchPlaceholder,
+}: DataTableProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [pageSize, setPageSize] = useState(15);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filteredData = data.filter((item) =>
-    columns.some((column) => item[column.key]?.toString().toLowerCase().includes(searchQuery.toLowerCase())),
-  )
+    columns.some((column) =>
+      item[column.key]
+        ?.toString()
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+    )
+  );
 
-  const totalPages = Math.ceil(filteredData.length / pageSize)
-  const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+  const totalPages = Math.ceil(filteredData.length / pageSize);
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   return (
     <div className="space-y-4">
+      {/* Search Input */}
       <div className="flex justify-between items-center gap-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -44,6 +75,7 @@ export default function DataTable({ data, columns, onEdit, onDelete, searchPlace
         </div>
       </div>
 
+      {/* Table */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -58,11 +90,22 @@ export default function DataTable({ data, columns, onEdit, onDelete, searchPlace
             {paginatedData.map((item) => (
               <TableRow key={item.id}>
                 {columns.map((column) => (
-                  <TableCell key={column.key}>{item[column.key]}</TableCell>
+                  <TableCell key={column.key}>
+                    {column.render
+                      ? column.render(item[column.key], item)
+                      : typeof item[column.key] === "object" &&
+                        item[column.key] !== null
+                      ? JSON.stringify(item[column.key])
+                      : item[column.key]}
+                  </TableCell>
                 ))}
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm" onClick={() => onEdit(item)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onEdit(item)}
+                    >
                       Edit
                     </Button>
                     <Button
@@ -81,10 +124,14 @@ export default function DataTable({ data, columns, onEdit, onDelete, searchPlace
         </Table>
       </div>
 
+      {/* Pagination Controls */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <span className="text-sm">Page Size:</span>
-          <Select value={pageSize.toString()} onValueChange={(value) => setPageSize(Number(value))}>
+          <Select
+            value={pageSize.toString()}
+            onValueChange={(value) => setPageSize(Number(value))}
+          >
             <SelectTrigger className="w-[70px]">
               <SelectValue />
             </SelectTrigger>
@@ -106,9 +153,9 @@ export default function DataTable({ data, columns, onEdit, onDelete, searchPlace
               max={totalPages}
               value={currentPage}
               onChange={(e) => {
-                const page = Number(e.target.value)
+                const page = Number(e.target.value);
                 if (page >= 1 && page <= totalPages) {
-                  setCurrentPage(page)
+                  setCurrentPage(page);
                 }
               }}
               className="w-16"
@@ -116,9 +163,9 @@ export default function DataTable({ data, columns, onEdit, onDelete, searchPlace
             <Button
               variant="secondary"
               onClick={() => {
-                const page = Number(currentPage)
+                const page = Number(currentPage);
                 if (page >= 1 && page <= totalPages) {
-                  setCurrentPage(page)
+                  setCurrentPage(page);
                 }
               }}
             >
@@ -131,6 +178,5 @@ export default function DataTable({ data, columns, onEdit, onDelete, searchPlace
         </div>
       </div>
     </div>
-  )
+  );
 }
-

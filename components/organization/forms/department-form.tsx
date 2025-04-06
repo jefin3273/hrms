@@ -1,9 +1,7 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
-import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,44 +20,66 @@ export default function DepartmentForm({
 }: DepartmentFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const supabase = createClient();
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
-
+    
     const formData = new FormData(event.currentTarget);
     const data = {
-      code: formData.get("code"),
-      name: formData.get("name"),
+      code: formData.get("code") as string,
+      name: formData.get("name") as string,
     };
 
-    const { data: department, error } = initialData
-      ? await supabase
-          .from("departments")
-          .update(data)
-          .eq("id", initialData.id)
-          .select()
-          .single()
-      : await supabase.from("departments").insert(data).select().single();
+    try {
+      let response;
+      
+      if (initialData) {
+        // Update existing department
+        response = await fetch('/api/departments', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: initialData.id,
+            ...data
+          }),
+        });
+      } else {
+        // Create new department
+        response = await fetch('/api/departments', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+      }
 
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
-      });
-    } else {
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'An error occurred');
+      }
+
+      const result = await response.json();
+      onSuccess(result);
+
       toast({
         title: "Success",
         description: `Department ${
           initialData ? "updated" : "created"
         } successfully`,
       });
-      onSuccess(department);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   }
 
   return (
