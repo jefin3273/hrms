@@ -2,9 +2,8 @@
 
 import type React from "react";
 
-import { useState } from "react";
-import { createClient } from "@/utils/supabase/client";
-import { Pencil } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,16 +36,34 @@ export default function CompanyForm({
 }: CompanyFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [logo, setLogo] = useState<File | null>(null);
-  const [taxSlabType, setTaxSlabType] = useState("monthly");
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [taxSlabType, setTaxSlabType] = useState(
+    initialData?.professional_tax?.slab_type || "monthly"
+  );
   const [taxSlabs, setTaxSlabs] = useState<
     Array<{
       startRange: string;
       endRange: string;
       amount: string;
     }>
-  >([{ startRange: "", endRange: "", amount: "" }]);
+  >(
+    initialData?.professional_tax?.slabs || [
+      { startRange: "", endRange: "", amount: "" },
+    ]
+  );
+  const [dailyRateType, setDailyRateType] = useState(
+    initialData?.daily_rate || "calendar"
+  );
+  const [orgWorkingDays, setOrgWorkingDays] = useState(
+    initialData?.organization_working_days || ""
+  );
   const { toast } = useToast();
-  const supabase = createClient();
+
+  useEffect(() => {
+    if (initialData?.logo_url) {
+      setLogoPreview(initialData.logo_url);
+    }
+  }, [initialData]);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -66,7 +83,9 @@ export default function CompanyForm({
         enable_clock_out: formData.get("enable_clock_out") === "on",
         enable_imei: formData.get("enable_imei") === "on",
       },
-      daily_rate: formData.get("daily_rate"),
+      daily_rate: dailyRateType,
+      organization_working_days:
+        dailyRateType === "organization" ? orgWorkingDays : null,
       epf: {
         number: formData.get("epf_number"),
         employee_contribution: formData.get("epf_employee"),
@@ -86,36 +105,49 @@ export default function CompanyForm({
         slab_type: taxSlabType,
         slabs: taxSlabs,
       },
+      logo_url: logoPreview,
     };
 
-    if (logo) {
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("company-logos")
-        .upload(`${data.code}/logo`, logo);
+    try {
+      // Handle logo upload if there's a new logo
+      if (logo) {
+        // Upload to API endpoint that handles Supabase storage
+        const uploadFormData = new FormData();
+        uploadFormData.append("file", logo);
+        uploadFormData.append("companyCode", data.code as string);
 
-      if (uploadError) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to upload logo",
+        const uploadResponse = await fetch("/api/upload-logo", {
+          method: "POST",
+          body: uploadFormData,
         });
-      } else {
-        (data as any).logo_url = uploadData.path;
+
+        if (!uploadResponse.ok) {
+          throw new Error("Failed to upload logo");
+        }
+
+        const uploadResult = await uploadResponse.json();
+        data.logo_url = uploadResult.url;
       }
-    }
 
-    const { error } = await supabase.from("companies").upsert({
-      ...data,
-      id: initialData?.id,
-    });
+      // Create or update company using Prisma API route
+      const endpoint = initialData?.id
+        ? `/api/companies/${initialData.id}`
+        : "/api/companies";
+      const method = initialData?.id ? "PUT" : "POST";
 
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
+      const response = await fetch(endpoint, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
-    } else {
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to save company");
+      }
+
       toast({
         title: "Success",
         description: `Company ${
@@ -123,16 +155,32 @@ export default function CompanyForm({
         } successfully`,
       });
       onSuccess();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "An error occurred",
+      });
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   }
+
+  const handleDeleteLogo = () => {
+    setLogo(null);
+    setLogoPreview(null);
+  };
+
+  const handleRemoveTaxSlab = (index: number) => {
+    setTaxSlabs(taxSlabs.filter((_, i) => i !== index));
+  };
 
   return (
     <form onSubmit={onSubmit} className="space-y-8">
       <div className="bg-gray-50 p-4 rounded-md">
         <h3 className="font-medium mb-4">Company</h3>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="code">Company Code*</Label>
             <Input
@@ -213,13 +261,13 @@ export default function CompanyForm({
               <div className="w-24 h-24 border rounded-md flex items-center justify-center bg-white">
                 {logo ? (
                   <img
-                    src={URL.createObjectURL(logo) || "/placeholder.svg"}
+                    src={URL.createObjectURL(logo)}
                     alt="Preview"
                     className="max-w-full max-h-full object-contain"
                   />
-                ) : initialData?.logo_url ? (
+                ) : logoPreview ? (
                   <img
-                    src={initialData.logo_url || "/placeholder.svg"}
+                    src={logoPreview}
                     alt="Company logo"
                     className="max-w-full max-h-full object-contain"
                   />
@@ -229,23 +277,37 @@ export default function CompanyForm({
                   </div>
                 )}
               </div>
-              <Label
-                htmlFor="logo"
-                className="cursor-pointer flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800"
-              >
-                <Pencil className="h-4 w-4" />
-                <span>Change Logo</span>
-                <input
-                  id="logo"
-                  type="file"
-                  className="hidden"
-                  accept="image/jpeg,image/png,image/gif"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) setLogo(file);
-                  }}
-                />
-              </Label>
+              <div className="flex flex-col space-y-2">
+                <Label
+                  htmlFor="logo"
+                  className="cursor-pointer flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800"
+                >
+                  <Pencil className="h-4 w-4" />
+                  <span>Change Logo</span>
+                  <input
+                    id="logo"
+                    type="file"
+                    className="hidden"
+                    accept="image/jpeg,image/png,image/gif"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) setLogo(file);
+                    }}
+                  />
+                </Label>
+                {(logo || logoPreview) && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleDeleteLogo}
+                    className="flex items-center space-x-1"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <span>Delete Logo</span>
+                  </Button>
+                )}
+              </div>
             </div>
             <p className="text-sm text-muted-foreground">
               Company logo supported: jpg,jpeg,png,gif
@@ -254,7 +316,7 @@ export default function CompanyForm({
         </div>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 lg:gap-8 grid-cols-1 md:grid-cols-2">
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>Notification Settings</Label>
@@ -294,10 +356,7 @@ export default function CompanyForm({
 
           <div className="space-y-2">
             <Label>Daily Rate Settings</Label>
-            <RadioGroup
-              name="daily_rate"
-              defaultValue={initialData?.daily_rate || "calendar"}
-            >
+            <RadioGroup value={dailyRateType} onValueChange={setDailyRateType}>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="working" id="working" />
                 <Label htmlFor="working">Working Days in a Month</Label>
@@ -309,6 +368,24 @@ export default function CompanyForm({
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="organization" id="organization" />
                 <Label htmlFor="organization">Organization Working days</Label>
+                {dailyRateType === "organization" && (
+                  <div className="ml-2">
+                    <Input
+                      type="number"
+                      min="1"
+                      max="31"
+                      value={orgWorkingDays}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        if (!isNaN(value) && value <= 31) {
+                          setOrgWorkingDays(e.target.value);
+                        }
+                      }}
+                      className="w-20"
+                      placeholder="Days"
+                    />
+                  </div>
+                )}
               </div>
             </RadioGroup>
           </div>
@@ -323,7 +400,7 @@ export default function CompanyForm({
                 placeholder="EPF Number"
                 defaultValue={initialData?.epf?.number}
               />
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-2 sm:gap-4 grid-cols-1 sm:grid-cols-2">
                 <div>
                   <Label>Employee Contribution</Label>
                   <Select
@@ -400,7 +477,7 @@ export default function CompanyForm({
                 placeholder="ESI Number"
                 defaultValue={initialData?.esi?.number}
               />
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-2 sm:gap-4 grid-cols-1 sm:grid-cols-2">
                 <div>
                   <Label>Employee Contribution</Label>
                   <Input
@@ -462,7 +539,10 @@ export default function CompanyForm({
               </div>
               <div className="space-y-4">
                 {taxSlabs.map((slab, index) => (
-                  <div key={index} className="grid grid-cols-3 gap-2">
+                  <div
+                    key={index}
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2"
+                  >
                     <Input
                       placeholder="Start Range"
                       value={slab.startRange}
@@ -481,20 +561,31 @@ export default function CompanyForm({
                         setTaxSlabs(newSlabs);
                       }}
                     />
-                    <div className="flex space-x-2">
-                      <Input
-                        placeholder="Amount"
-                        value={slab.amount}
-                        onChange={(e) => {
-                          const newSlabs = [...taxSlabs];
-                          newSlabs[index].amount = e.target.value;
-                          setTaxSlabs(newSlabs);
-                        }}
-                      />
+                    <Input
+                      placeholder="Amount"
+                      value={slab.amount}
+                      onChange={(e) => {
+                        const newSlabs = [...taxSlabs];
+                        newSlabs[index].amount = e.target.value;
+                        setTaxSlabs(newSlabs);
+                      }}
+                    />
+                    <div className="flex space-x-1">
+                      {taxSlabs.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          onClick={() => handleRemoveTaxSlab(index)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
                       {index === taxSlabs.length - 1 && (
                         <Button
                           type="button"
                           variant="outline"
+                          size="icon"
                           onClick={() => {
                             setTaxSlabs([
                               ...taxSlabs,
@@ -526,8 +617,13 @@ export default function CompanyForm({
       <div className="bg-yellow-50 p-4 rounded-md">
         <p className="text-sm">Fields marked with * are mandatory</p>
         <p className="text-sm">
-          When a Company logo is uploaded,a copy of it will be uploaded to the
-          Mobile App.
+          <ul className="text-sm list-disc list-inside">
+            <li>Company logo supported: jpg, jpeg, png, bmp, gif</li>
+            <li>
+              When a Company logo is uploaded, a copy of it will be uploaded to
+              the Mobile App.
+            </li>
+          </ul>
         </p>
       </div>
     </form>

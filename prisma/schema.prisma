@@ -57,25 +57,26 @@ model ClaimType {
 }
 
 model Company {
-  id              String        @id @default(uuid())
-  code            String        @unique
-  name            String
-  address         String?
-  address1        String?
-  address2        String?
-  city            String?
-  state           String?
-  postalCode      String?       @map("postal_code")
-  logoUrl         String?       @map("logo_url")
-  infoUpdated     Boolean       @default(false) @map("info_updated")
-  notifications   Json          @default("{}") @db.JsonB
-  dailyRate       String        @default("calendar") @map("daily_rate")
-  epf             Json          @default("{}") @db.JsonB
-  esi             Json          @default("{}") @db.JsonB
-  professionalTax Json          @default("{}") @map("professional_tax") @db.JsonB
-  createdAt       DateTime      @default(now()) @map("created_at")
-  updatedAt       DateTime      @default(now()) @map("updated_at")
-  companyUsers    CompanyUser[]
+  id                      String        @id @default(uuid())
+  code                    String        @unique
+  name                    String
+  address                 String?
+  address1                String?
+  address2                String?
+  city                    String?
+  state                   String?
+  organizationWorkingDays String?
+  postalCode              String?       @map("postal_code")
+  logoUrl                 String?       @map("logo_url")
+  infoUpdated             Boolean       @default(false) @map("info_updated")
+  notifications           Json          @default("{}") @db.JsonB
+  dailyRate               String        @default("calendar") @map("daily_rate")
+  epf                     Json          @default("{}") @db.JsonB
+  esi                     Json          @default("{}") @db.JsonB
+  professionalTax         Json          @default("{}") @map("professional_tax") @db.JsonB
+  createdAt               DateTime      @default(now()) @map("created_at")
+  updatedAt               DateTime      @default(now()) @map("updated_at")
+  companyUsers            CompanyUser[]
 }
 
 model CompanyUser {
