@@ -318,6 +318,7 @@ export default function DashboardHeader({
 
   return (
     <header className="bg-[#1e4d8c] text-white">
+      {/* Top Bar */}
       <div className="flex items-center justify-between px-4 py-2">
         <div className="flex items-center space-x-2">
           <h1 className="text-xl font-bold">JONSETA</h1>
@@ -328,8 +329,7 @@ export default function DashboardHeader({
             <span>{currentYear}</span>
             <span>{currentMonth}</span>
           </div>
-
-          {/* Notification Dropdown */}
+  
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -338,21 +338,16 @@ export default function DashboardHeader({
             </PopoverTrigger>
             <PopoverContent align="end" className="w-80">
               <div className="space-y-4">
-                <h3 className="font-semibold">
-                  Latest Notifications & Activities
-                </h3>
-                <div className="text-sm text-muted-foreground">
-                  No new notifications
-                </div>
+                <h3 className="font-semibold">Latest Notifications & Activities</h3>
+                <div className="text-sm text-muted-foreground">No new notifications</div>
               </div>
             </PopoverContent>
           </Popover>
-
+  
           <Button variant="ghost" size="icon">
             <Settings className="h-5 w-5" />
           </Button>
-
-          {/* User Profile Dropdown */}
+  
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center space-x-2">
@@ -367,9 +362,7 @@ export default function DashboardHeader({
                 </div>
                 <div>
                   <h4 className="font-semibold">Jefin John</h4>
-                  <p className="text-sm text-muted-foreground">
-                    USER COMPANY: NONE
-                  </p>
+                  <p className="text-sm text-muted-foreground">USER COMPANY: NONE</p>
                 </div>
               </div>
               <DropdownMenuSeparator />
@@ -397,8 +390,7 @@ export default function DashboardHeader({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
-          {/* Module Switcher Dropdown */}
+  
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -423,11 +415,11 @@ export default function DashboardHeader({
           </DropdownMenu>
         </div>
       </div>
-
-      {/* Navigation Bar with Dropdowns */}
-      <nav className="border-t border-blue-600 relative">
-        <div className="flex items-center justify-between px-4">
-          <div className="flex space-x-6 py-2">
+  
+      {/* Bottom Nav */}
+      <nav className="border-t border-white/0 mt-0">
+        <div className="flex items-center justify-between px-4 py-1">
+          <div className="flex space-x-6">
             {menuItems.map((item) => (
               <div
                 key={item.name}
@@ -448,13 +440,11 @@ export default function DashboardHeader({
                     {item.name}
                   </Link>
                 )}
-
-                {/* Show submenu on hover */}
                 {item.subItems.length > 0 && renderSubMenu(item)}
               </div>
             ))}
           </div>
-
+  
           <ReferEarnButton className="bg-yellow-500 text-black hover:bg-yellow-400 transition-colors duration-200">
             <Gift className="mr-2 h-4 w-4" />
             REFER AND EARN
@@ -463,4 +453,5 @@ export default function DashboardHeader({
       </nav>
     </header>
   );
+  
 }

@@ -19,7 +19,7 @@ export default function ReferEarnModal({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95%] max-w-[600px] sm:max-w-[700px] lg:max-w-[800px] px-4 sm:px-6 py-6">
+      <DialogContent className="w-[95%] max-w-[600px] sm:max-w-[700px] lg:max-w-[500px] px-4 sm:px-6 py-6">
         <DialogHeader className="relative">
           <DialogTitle className="text-center text-2xl font-bold text-yellow-500">
             REFER & EARN
