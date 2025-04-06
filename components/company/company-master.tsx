@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,12 +12,55 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
 
-export default function CompanyMaster({ companies }: { companies: any[] }) {
+export default function CompanyMaster({
+  initialCompanies,
+}: {
+  initialCompanies: any[];
+}) {
+  const [companies, setCompanies] = useState(initialCompanies || []);
   const [searchQuery, setSearchQuery] = useState("");
   const [pageSize, setPageSize] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const [isNewCompanyOpen, setIsNewCompanyOpen] = useState(false);
+  const [isEditCompanyOpen, setIsEditCompanyOpen] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const fetchCompanies = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/companies");
+      if (!response.ok) {
+        throw new Error("Failed to fetch companies");
+      }
+      const data = await response.json();
+      setCompanies(data);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to fetch companies",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle successful form submission
+  const handleFormSuccess = () => {
+    setIsNewCompanyOpen(false);
+    setIsEditCompanyOpen(false);
+    fetchCompanies();
+  };
+
+  // Handle edit company
+  const handleEditCompany = (company: any) => {
+    setSelectedCompany(company);
+    setIsEditCompanyOpen(true);
+  };
 
   const filteredCompanies = companies.filter(
     (company) =>
@@ -62,14 +105,32 @@ export default function CompanyMaster({ companies }: { companies: any[] }) {
         totalPages={totalPages}
         onPageChange={setCurrentPage}
         onPageSizeChange={setPageSize}
+        onEdit={handleEditCompany}
+        isLoading={isLoading}
       />
 
+      {/* New Company Dialog */}
       <Dialog open={isNewCompanyOpen} onOpenChange={setIsNewCompanyOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add New Company</DialogTitle>
           </DialogHeader>
-          <CompanyForm onSuccess={() => setIsNewCompanyOpen(false)} />
+          <CompanyForm onSuccess={handleFormSuccess} />
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Company Dialog */}
+      <Dialog open={isEditCompanyOpen} onOpenChange={setIsEditCompanyOpen}>
+        <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Company</DialogTitle>
+          </DialogHeader>
+          {selectedCompany && (
+            <CompanyForm
+              onSuccess={handleFormSuccess}
+              initialData={selectedCompany}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
