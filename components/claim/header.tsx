@@ -18,6 +18,8 @@ import {
   Award,
   Users,
   LogOut,
+  Menu,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -258,6 +260,7 @@ export default function DashboardHeader({
   );
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [hoveredSubItem, setHoveredSubItem] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -318,49 +321,50 @@ export default function DashboardHeader({
 
   return (
     <header className="bg-[#1e4d8c] text-white">
+      {/* Top Bar */}
       <div className="flex items-center justify-between px-4 py-2">
         <div className="flex items-center space-x-2">
           <h1 className="text-xl font-bold">JONSETA</h1>
-          <span className="text-sm">{title}</span>
+          <span className="text-sm hidden sm:inline">{title}</span>
         </div>
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2 bg-white/10 rounded-md px-3 py-1">
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="hidden sm:flex items-center space-x-2 bg-white/10 rounded-md px-3 py-1">
             <span>{currentYear}</span>
             <span>{currentMonth}</span>
           </div>
 
-          {/* Notification Dropdown */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-80">
-              <div className="space-y-4">
-                <h3 className="font-semibold">
-                  Latest Notifications & Activities
-                </h3>
-                <div className="text-sm text-muted-foreground">
-                  No new notifications
+          <div className="hidden sm:block">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Bell className="h-5 w-5" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-80">
+                <div className="space-y-4">
+                  <h3 className="font-semibold">
+                    Latest Notifications & Activities
+                  </h3>
+                  <div className="text-sm text-muted-foreground">
+                    No new notifications
+                  </div>
                 </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+              </PopoverContent>
+            </Popover>
+          </div>
 
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="hidden sm:flex">
             <Settings className="h-5 w-5" />
           </Button>
 
-          {/* User Profile Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center space-x-2">
                 <User className="h-5 w-5" />
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className="h-4 w-4 hidden sm:block" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
+            <DropdownMenuContent align="end" className="w-[260px] sm:w-80">
               <div className="flex items-center space-x-2 p-4">
                 <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
                   <User className="h-6 w-6 text-white" />
@@ -398,10 +402,9 @@ export default function DashboardHeader({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Module Switcher Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="hidden sm:flex">
                 <div className="relative">
                   <Users className="h-5 w-5" />
                 </div>
@@ -421,13 +424,27 @@ export default function DashboardHeader({
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {/* Mobile menu button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="sm:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </Button>
         </div>
       </div>
 
-      {/* Navigation Bar with Dropdowns */}
-      <nav className="border-t border-blue-600 relative">
-        <div className="flex items-center justify-between px-4">
-          <div className="flex space-x-6 py-2">
+      {/* Bottom Nav for Desktop */}
+      <nav className="border-t border-white/0 mt-0 hidden sm:block">
+        <div className="flex items-center justify-between px-4 py-1">
+          <div className="flex space-x-6">
             {menuItems.map((item) => (
               <div
                 key={item.name}
@@ -448,19 +465,130 @@ export default function DashboardHeader({
                     {item.name}
                   </Link>
                 )}
-
-                {/* Show submenu on hover */}
                 {item.subItems.length > 0 && renderSubMenu(item)}
               </div>
             ))}
           </div>
 
-          <ReferEarnButton className="bg-yellow-500 text-black hover:bg-yellow-400 transition-colors duration-200">
+          <ReferEarnButton className="hidden md:flex bg-yellow-500 text-black hover:bg-yellow-400 transition-colors duration-200">
             <Gift className="mr-2 h-4 w-4" />
             REFER AND EARN
           </ReferEarnButton>
         </div>
       </nav>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="sm:hidden bg-blue-900 overflow-y-auto max-h-[calc(100vh-60px)]">
+          {/* Add notification and settings at the top of mobile menu */}
+          <div className="flex items-center justify-between p-4 border-b border-blue-800">
+            <div className="text-sm flex items-center">
+              <span>{currentYear}</span>
+              <span className="ml-2">{currentMonth}</span>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Bell className="h-5 w-5" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-80">
+                  <div className="space-y-4">
+                    <h3 className="font-semibold">
+                      Latest Notifications & Activities
+                    </h3>
+                    <div className="text-sm text-muted-foreground">
+                      No new notifications
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+              <Button variant="ghost" size="icon">
+                <Settings className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+          {menuItems.map((item) => (
+            <div key={item.name} className="border-b border-blue-800">
+              {item.subItems.length > 0 ? (
+                <details className="group">
+                  <summary className="flex justify-between items-center px-4 py-2 cursor-pointer">
+                    <span>{item.name}</span>
+                    <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
+                  </summary>
+                  <div className="bg-blue-800 pl-4">
+                    {item.subItems.map((subItem) => (
+                      <div
+                        key={subItem.name}
+                        className="border-t border-blue-700"
+                      >
+                        {subItem.subItems && subItem.subItems.length > 0 ? (
+                          <details className="group">
+                            <summary className="flex justify-between items-center px-4 py-2 cursor-pointer">
+                              <span>{subItem.name}</span>
+                              <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
+                            </summary>
+                            <div className="bg-blue-700 pl-4">
+                              {subItem.subItems.map((nestedItem) => (
+                                <Link
+                                  key={nestedItem.name}
+                                  href={nestedItem.href}
+                                  className="block px-4 py-2 text-sm border-t border-blue-600"
+                                  onClick={() => setMobileMenuOpen(false)}
+                                >
+                                  {nestedItem.name}
+                                </Link>
+                              ))}
+                            </div>
+                          </details>
+                        ) : (
+                          <Link
+                            href={subItem.href}
+                            className="block px-4 py-2 text-sm"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            {subItem.name}
+                          </Link>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              ) : (
+                <Link
+                  href={item.href}
+                  className="block px-4 py-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              )}
+            </div>
+          ))}
+
+          <div className="p-4">
+            <ReferEarnButton className="w-full bg-yellow-500 text-black hover:bg-yellow-400 transition-colors duration-200">
+              <Gift className="mr-2 h-4 w-4" />
+              REFER AND EARN
+            </ReferEarnButton>
+          </div>
+
+          <div className="p-4 space-y-2 border-t border-blue-800">
+            {moduleLinks.map(({ icon: Icon, label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                className="flex items-center space-x-2 px-2 py-2 bg-blue-800 rounded-md"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Icon className="h-5 w-5" />
+                <span>{label}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </header>
   );
 }

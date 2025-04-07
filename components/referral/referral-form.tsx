@@ -1,3 +1,4 @@
+// ReferralForm.tsx - improved mobile responsiveness
 "use client";
 
 import type React from "react";
@@ -58,90 +59,141 @@ export default function ReferralForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-bold text-yellow-500">
+      <DialogContent className="w-full max-w-[95%] sm:max-w-[600px] max-h-[90vh] overflow-y-auto p-3 sm:p-6">
+        <DialogHeader className="mb-2 sm:mb-4">
+          <DialogTitle className="text-center text-lg sm:text-2xl font-bold text-yellow-500">
             REFERRAL FORM
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={onSubmit} className="space-y-6">
-          <div className="space-y-4">
-            <h3 className="font-semibold">Your Information</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="referrerCompany">Company Name*</Label>
+        <form onSubmit={onSubmit} className="space-y-3 sm:space-y-6">
+          <div className="space-y-2 sm:space-y-4">
+            <h3 className="font-semibold text-sm sm:text-base">
+              Your Information
+            </h3>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
+              <div className="space-y-1 sm:space-y-2">
+                <Label htmlFor="referrerCompany" className="text-xs sm:text-sm">
+                  Company Name*
+                </Label>
                 <Input
                   id="referrerCompany"
                   name="referrerCompany"
                   required
                   defaultValue="JONSETA CORP PVT LTD(TRAIL)"
+                  className="text-xs sm:text-sm h-8 sm:h-10"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="referrerName">Name*</Label>
-                <Input id="referrerName" name="referrerName" required />
+              <div className="space-y-1 sm:space-y-2">
+                <Label htmlFor="referrerName" className="text-xs sm:text-sm">
+                  Name*
+                </Label>
+                <Input
+                  id="referrerName"
+                  name="referrerName"
+                  required
+                  className="text-xs sm:text-sm h-8 sm:h-10"
+                />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="referrerEmail">Email*</Label>
+              <div className="space-y-1 sm:space-y-2">
+                <Label htmlFor="referrerEmail" className="text-xs sm:text-sm">
+                  Email*
+                </Label>
                 <Input
                   id="referrerEmail"
                   name="referrerEmail"
                   type="email"
                   required
+                  className="text-xs sm:text-sm h-8 sm:h-10"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="referrerMobile">Mobile No*</Label>
+              <div className="space-y-1 sm:space-y-2">
+                <Label htmlFor="referrerMobile" className="text-xs sm:text-sm">
+                  Mobile No*
+                </Label>
                 <Input
                   id="referrerMobile"
                   name="referrerMobile"
                   type="tel"
                   required
+                  className="text-xs sm:text-sm h-8 sm:h-10"
                 />
               </div>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h3 className="font-semibold">Your Referral</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="companyName">Company Name*</Label>
-                <Input id="companyName" name="companyName" required />
+          <div className="space-y-2 sm:space-y-4">
+            <h3 className="font-semibold text-sm sm:text-base">
+              Your Referral
+            </h3>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
+              <div className="space-y-1 sm:space-y-2">
+                <Label htmlFor="companyName" className="text-xs sm:text-sm">
+                  Company Name*
+                </Label>
+                <Input
+                  id="companyName"
+                  name="companyName"
+                  required
+                  className="text-xs sm:text-sm h-8 sm:h-10"
+                />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="contactPerson">Contact Person*</Label>
-                <Input id="contactPerson" name="contactPerson" required />
+              <div className="space-y-1 sm:space-y-2">
+                <Label htmlFor="contactPerson" className="text-xs sm:text-sm">
+                  Contact Person*
+                </Label>
+                <Input
+                  id="contactPerson"
+                  name="contactPerson"
+                  required
+                  className="text-xs sm:text-sm h-8 sm:h-10"
+                />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email*</Label>
-                <Input id="email" name="email" type="email" required />
+              <div className="space-y-1 sm:space-y-2">
+                <Label htmlFor="email" className="text-xs sm:text-sm">
+                  Email*
+                </Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  className="text-xs sm:text-sm h-8 sm:h-10"
+                />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="mobile">Mobile No*</Label>
-                <Input id="mobile" name="mobile" type="tel" required />
+              <div className="space-y-1 sm:space-y-2">
+                <Label htmlFor="mobile" className="text-xs sm:text-sm">
+                  Mobile No*
+                </Label>
+                <Input
+                  id="mobile"
+                  name="mobile"
+                  type="tel"
+                  required
+                  className="text-xs sm:text-sm h-8 sm:h-10"
+                />
               </div>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
+          <div className="space-y-2 sm:space-y-4">
+            <div className="flex items-start space-x-2">
               <Checkbox
                 id="terms"
                 checked={agreed}
                 onCheckedChange={(checked) => setAgreed(checked as boolean)}
                 required
+                className="mt-1"
               />
               <label
                 htmlFor="terms"
-                className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                className="text-xs sm:text-sm leading-tight"
               >
                 Click here to acknowledge the below Terms and Conditions
               </label>
             </div>
 
-            <div className="space-y-2 text-sm text-gray-600">
+            <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-gray-600">
               <p>
                 You acknowledge that you have read and understood the Terms of
                 Service, agreed to allow DigiSME to collect, use and disclose
@@ -165,9 +217,12 @@ export default function ReferralForm({
               </p>
             </div>
 
-            <div className="text-sm text-gray-600">
+            <div className="text-xs sm:text-sm text-gray-600">
               For more details, please contact our sales team at{" "}
-              <a href="mailto:sales@digisme.in" className="text-blue-600">
+              <a
+                href="mailto:sales@digisme.in"
+                className="text-blue-600 break-words"
+              >
                 sales@digisme.in
               </a>{" "}
               and{" "}
@@ -177,18 +232,19 @@ export default function ReferralForm({
             </div>
           </div>
 
-          <div className="flex justify-end space-x-4">
+          <div className="flex justify-end gap-2 sm:gap-4 pt-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              className="text-xs sm:text-sm h-8 sm:h-10 px-2 sm:px-4"
             >
               CLOSE
             </Button>
             <Button
               type="submit"
               disabled={!agreed || loading}
-              className="bg-blue-900 text-white hover:bg-blue-800"
+              className="bg-blue-900 text-white hover:bg-blue-800 text-xs sm:text-sm h-8 sm:h-10 px-2 sm:px-4"
             >
               SUBMIT
             </Button>
