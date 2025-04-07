@@ -76,18 +76,17 @@ export default function CompanyMaster({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Company Master</h1>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
+        <h1 className="text-xl sm:text-2xl font-bold">Company Master</h1>
         <Button
           onClick={() => setIsNewCompanyOpen(true)}
-          className="bg-blue-500"
+          className="bg-blue-500 w-full sm:w-auto"
         >
           + NEW
         </Button>
       </div>
-
-      <div className="flex justify-between items-center gap-4">
-        <div className="relative flex-1 max-w-sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
+        <div className="relative flex-1 w-full">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="ENTER COMPANY NAME OR COMPANY CODE"
@@ -97,7 +96,6 @@ export default function CompanyMaster({
           />
         </div>
       </div>
-
       <CompanyTable
         companies={paginatedCompanies}
         pageSize={pageSize}
@@ -108,17 +106,15 @@ export default function CompanyMaster({
         onEdit={handleEditCompany}
         isLoading={isLoading}
       />
-
       {/* New Company Dialog */}
       <Dialog open={isNewCompanyOpen} onOpenChange={setIsNewCompanyOpen}>
-        <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] max-w-3xl max-h-[80vh] overflow-y-auto p-3 sm:p-6">
           <DialogHeader>
             <DialogTitle>Add New Company</DialogTitle>
           </DialogHeader>
           <CompanyForm onSuccess={handleFormSuccess} />
         </DialogContent>
       </Dialog>
-
       {/* Edit Company Dialog */}
       <Dialog open={isEditCompanyOpen} onOpenChange={setIsEditCompanyOpen}>
         <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] overflow-y-auto">

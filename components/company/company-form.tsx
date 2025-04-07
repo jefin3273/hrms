@@ -178,9 +178,9 @@ export default function CompanyForm({
 
   return (
     <form onSubmit={onSubmit} className="space-y-8">
-      <div className="bg-gray-50 p-4 rounded-md">
-        <h3 className="font-medium mb-4">Company</h3>
-        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
+      <div className="bg-gray-50 p-3 md:p-4 rounded-md">
+        <h3 className="font-medium mb-3 md:mb-4">Company</h3>
+        <div className="grid gap-2 md:gap-3 grid-cols-1 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="code">Company Code*</Label>
             <Input
@@ -257,7 +257,7 @@ export default function CompanyForm({
           </div>
           <div className="space-y-2">
             <Label>Company Logo</Label>
-            <div className="flex items-start space-x-4">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:space-x-4 space-y-3 sm:space-y-0">
               <div className="w-24 h-24 border rounded-md flex items-center justify-center bg-white">
                 {logo ? (
                   <img
@@ -316,7 +316,7 @@ export default function CompanyForm({
         </div>
       </div>
 
-      <div className="grid gap-4 sm:gap-6 lg:gap-8 grid-cols-1 md:grid-cols-2">
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>Notification Settings</Label>
@@ -541,7 +541,7 @@ export default function CompanyForm({
                 {taxSlabs.map((slab, index) => (
                   <div
                     key={index}
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2"
+                    className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2"
                   >
                     <Input
                       placeholder="Start Range"
@@ -561,16 +561,18 @@ export default function CompanyForm({
                         setTaxSlabs(newSlabs);
                       }}
                     />
-                    <Input
-                      placeholder="Amount"
-                      value={slab.amount}
-                      onChange={(e) => {
-                        const newSlabs = [...taxSlabs];
-                        newSlabs[index].amount = e.target.value;
-                        setTaxSlabs(newSlabs);
-                      }}
-                    />
-                    <div className="flex space-x-1">
+                    <div className="col-span-1 sm:col-span-1 lg:col-span-1">
+                      <Input
+                        placeholder="Amount"
+                        value={slab.amount}
+                        onChange={(e) => {
+                          const newSlabs = [...taxSlabs];
+                          newSlabs[index].amount = e.target.value;
+                          setTaxSlabs(newSlabs);
+                        }}
+                      />
+                    </div>
+                    <div className="flex space-x-1 col-span-1 sm:col-span-1 lg:col-span-1">
                       {taxSlabs.length > 1 && (
                         <Button
                           type="button"
@@ -600,20 +602,45 @@ export default function CompanyForm({
                   </div>
                 ))}
               </div>
+              {dailyRateType === "organization" && (
+                <div className="ml-0 sm:ml-2 mt-2 sm:mt-0">
+                  <Input
+                    type="number"
+                    min="1"
+                    max="31"
+                    value={orgWorkingDays}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value);
+                      if (!isNaN(value) && value <= 31) {
+                        setOrgWorkingDays(e.target.value);
+                      }
+                    }}
+                    className="w-full sm:w-20"
+                    placeholder="Days"
+                  />
+                </div>
+              )}
+              <div className="flex flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onSuccess}
+                  className="w-full sm:w-auto"
+                >
+                  CANCEL
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full sm:w-auto"
+                >
+                  SAVE
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      <div className="flex justify-end space-x-4">
-        <Button type="button" variant="outline" onClick={onSuccess}>
-          CANCEL
-        </Button>
-        <Button type="submit" disabled={isLoading}>
-          SAVE
-        </Button>
-      </div>
-
       <div className="bg-yellow-50 p-4 rounded-md">
         <p className="text-sm">Fields marked with * are mandatory</p>
         <p className="text-sm">

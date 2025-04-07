@@ -40,18 +40,22 @@ export default function CompanyTable({
 }: CompanyTableProps) {
   return (
     <div className="space-y-4">
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Code</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Address</TableHead>
-              <TableHead>City</TableHead>
-              <TableHead>State</TableHead>
-              <TableHead>Postal/Zip Code</TableHead>
-              <TableHead>Company Info Updated</TableHead>
-              <TableHead>Edit</TableHead>
+              <TableHead className="whitespace-nowrap">Code</TableHead>
+              <TableHead className="whitespace-nowrap">Name</TableHead>
+              <TableHead className="whitespace-nowrap">Address</TableHead>
+              <TableHead className="whitespace-nowrap">City</TableHead>
+              <TableHead className="whitespace-nowrap">State</TableHead>
+              <TableHead className="whitespace-nowrap">
+                Postal/Zip Code
+              </TableHead>
+              <TableHead className="whitespace-nowrap">
+                Company Info Updated
+              </TableHead>
+              <TableHead className="whitespace-nowrap">Edit</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -92,8 +96,7 @@ export default function CompanyTable({
           </TableBody>
         </Table>
       </div>
-
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
         <div className="flex items-center space-x-2">
           <span className="text-sm">Page Size:</span>
           <Select
@@ -112,7 +115,7 @@ export default function CompanyTable({
           </Select>
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
           <div className="flex items-center space-x-2">
             <span className="text-sm">Go to Page:</span>
             <Input
@@ -136,6 +139,7 @@ export default function CompanyTable({
                   onPageChange(page);
                 }
               }}
+              size="sm"
             >
               GO
             </Button>
