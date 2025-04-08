@@ -43,10 +43,10 @@ const menuItems = [
     name: "General Setup",
     href: "/attendance",
     subItems: [
-      { name: "Company", href: "/general-setup/company" },
+      { name: "Company", href: "/attendance/general-setup/company" },
       {
         name: "Organisation Hierarchy",
-        href: "/general-setup/organisation-hierarchy",
+        href: "/attendance/general-setup/organisation-hierarchy",
       },
       {
         name: "User Access",

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import DashboardHeader from "@/components/attendance/header";
-import OrganizationTabs from "@/components/organization/organization-tabs";
+import OrganizationTabs from "@/components/attendance/general_setup/organization/organization-tabs";
 import { prisma } from "@/lib/prisma"; // Make sure you have a prisma client setup
 
 export default async function OrganizationHierarchyPage() {

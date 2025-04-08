@@ -91,6 +91,7 @@ export default function DepartmentForm({
           name="code"
           defaultValue={initialData?.code}
           required
+          className="w-full"
         />
       </div>
       <div className="space-y-2">
@@ -100,13 +101,14 @@ export default function DepartmentForm({
           name="name"
           defaultValue={initialData?.name}
           required
+          className="w-full"
         />
       </div>
-      <div className="flex justify-end space-x-4">
-        <Button type="button" variant="outline" onClick={onCancel}>
+      <div className="flex flex-col-reverse sm:flex-row sm:justify-end space-y-2 space-y-reverse sm:space-y-0 sm:space-x-4">
+        <Button type="button" variant="outline" onClick={onCancel} className="w-full sm:w-auto">
           Cancel
         </Button>
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
           {isLoading ? "Saving..." : "Save"}
         </Button>
       </div>

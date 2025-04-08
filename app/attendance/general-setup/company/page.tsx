@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import DashboardHeader from "@/components/attendance/header";
-import CompanyMaster from "@/components/company/company-master";
+import CompanyMaster from "@/components/attendance/general_setup/company/company-master";
 import { prisma } from "@/lib/prisma"; // You'll need to create this prisma client file
 
 export default async function CompanyPage() {

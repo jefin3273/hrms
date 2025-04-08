@@ -121,7 +121,11 @@ export default function SectionForm({
             <FormItem>
               <FormLabel>Section Code</FormLabel>
               <FormControl>
-                <Input placeholder="Enter section code" {...field} />
+                <Input
+                  placeholder="Enter section code"
+                  {...field}
+                  className="w-full"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -134,7 +138,11 @@ export default function SectionForm({
             <FormItem>
               <FormLabel>Section Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter section name" {...field} />
+                <Input
+                  placeholder="Enter section name"
+                  {...field}
+                  className="w-full"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -152,7 +160,7 @@ export default function SectionForm({
                 value={field.value}
               >
                 <FormControl>
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select a department" />
                   </SelectTrigger>
                 </FormControl>
@@ -168,11 +176,20 @@ export default function SectionForm({
             </FormItem>
           )}
         />
-        <div className="flex justify-end space-x-2">
-          <Button type="button" variant="outline" onClick={onCancel}>
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end space-y-2 space-y-reverse sm:space-y-0 sm:space-x-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            className="w-full sm:w-auto"
+          >
             Cancel
           </Button>
-          <Button type="submit" disabled={isLoading}>
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full sm:w-auto"
+          >
             {isLoading ? "Saving..." : initialData ? "Update" : "Create"}
           </Button>
         </div>

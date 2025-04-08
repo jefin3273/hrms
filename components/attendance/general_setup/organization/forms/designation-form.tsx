@@ -104,7 +104,11 @@ export default function DesignationForm({
             <FormItem>
               <FormLabel>Designation Code</FormLabel>
               <FormControl>
-                <Input placeholder="Enter designation code" {...field} />
+                <Input
+                  placeholder="Enter designation code"
+                  {...field}
+                  className="w-full"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -117,17 +121,30 @@ export default function DesignationForm({
             <FormItem>
               <FormLabel>Designation Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter designation name" {...field} />
+                <Input
+                  placeholder="Enter designation name"
+                  {...field}
+                  className="w-full"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <div className="flex justify-end space-x-2">
-          <Button type="button" variant="outline" onClick={onCancel}>
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end space-y-2 space-y-reverse sm:space-y-0 sm:space-x-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            className="w-full sm:w-auto"
+          >
             Cancel
           </Button>
-          <Button type="submit" disabled={isLoading}>
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full sm:w-auto"
+          >
             {isLoading ? "Saving..." : initialData ? "Update" : "Create"}
           </Button>
         </div>

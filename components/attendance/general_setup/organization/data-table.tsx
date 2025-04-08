@@ -62,21 +62,21 @@ export default function DataTable({
 
   return (
     <div className="space-y-4">
-      {/* Search Input */}
-      <div className="flex justify-between items-center gap-4">
-        <div className="relative flex-1 max-w-sm">
+      {/* Search Input - Make responsive */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="relative w-full sm:max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={searchPlaceholder}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8"
+            className="pl-8 w-full"
           />
         </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-md border">
+      {/* Table - Make responsive with horizontal scroll on small screens */}
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -124,8 +124,8 @@ export default function DataTable({
         </Table>
       </div>
 
-      {/* Pagination Controls */}
-      <div className="flex items-center justify-between">
+      {/* Pagination Controls - Stack vertically on small screens */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-2">
           <span className="text-sm">Page Size:</span>
           <Select
@@ -144,9 +144,9 @@ export default function DataTable({
           </Select>
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row w-full sm:w-auto items-start sm:items-center gap-4 sm:space-x-4">
           <div className="flex items-center space-x-2">
-            <span className="text-sm">Go to Page:</span>
+            <span className="text-sm whitespace-nowrap">Go to Page:</span>
             <Input
               type="number"
               min={1}
@@ -172,7 +172,7 @@ export default function DataTable({
               GO
             </Button>
           </div>
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-muted-foreground whitespace-nowrap">
             Page: {currentPage} of {totalPages}, Total: {filteredData.length}
           </div>
         </div>

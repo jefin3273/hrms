@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useToast } from "@/components/ui/use-toast"
+import { useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Form,
   FormControl,
@@ -14,27 +14,27 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Category } from "@prisma/client" // Import the Prisma type
+} from "@/components/ui/form";
+import { Category } from "@prisma/client"; // Import the Prisma type
 
 const formSchema = z.object({
   code: z.string().min(1, "Code is required"),
   name: z.string().min(1, "Name is required"),
-})
+});
 
-type FormData = z.infer<typeof formSchema>
+type FormData = z.infer<typeof formSchema>;
 
 export default function CategoryForm({
   initialData,
   onSuccess,
   onCancel,
 }: {
-  initialData?: Category | null
-  onSuccess: (data: Category) => void
-  onCancel: () => void
+  initialData?: Category | null;
+  onSuccess: (data: Category) => void;
+  onCancel: () => void;
 }) {
-  const [isLoading, setIsLoading] = useState(false)
-  const { toast } = useToast()
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -42,10 +42,10 @@ export default function CategoryForm({
       code: initialData?.code || "",
       name: initialData?.name || "",
     },
-  })
+  });
 
   const onSubmit = async (data: FormData) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       if (initialData) {
         // Update existing category
@@ -55,19 +55,19 @@ export default function CategoryForm({
             "Content-Type": "application/json",
           },
           body: JSON.stringify(data),
-        })
+        });
 
         if (!response.ok) {
-          const error = await response.json()
-          throw new Error(error.message || "Failed to update category")
+          const error = await response.json();
+          throw new Error(error.message || "Failed to update category");
         }
 
-        const updatedCategory = await response.json()
-        onSuccess(updatedCategory)
+        const updatedCategory = await response.json();
+        onSuccess(updatedCategory);
         toast({
           title: "Success",
           description: "Category updated successfully",
-        })
+        });
       } else {
         // Create new category
         const response = await fetch("/api/categories", {
@@ -76,30 +76,30 @@ export default function CategoryForm({
             "Content-Type": "application/json",
           },
           body: JSON.stringify(data),
-        })
+        });
 
         if (!response.ok) {
-          const error = await response.json()
-          throw new Error(error.message || "Failed to create category")
+          const error = await response.json();
+          throw new Error(error.message || "Failed to create category");
         }
 
-        const newCategory = await response.json()
-        onSuccess(newCategory)
+        const newCategory = await response.json();
+        onSuccess(newCategory);
         toast({
           title: "Success",
           description: "Category created successfully",
-        })
+        });
       }
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
         description: error.message,
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Form {...form}>
@@ -111,7 +111,11 @@ export default function CategoryForm({
             <FormItem>
               <FormLabel>Category Code</FormLabel>
               <FormControl>
-                <Input placeholder="Enter category code" {...field} />
+                <Input
+                  placeholder="Enter category code"
+                  {...field}
+                  className="w-full"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -124,21 +128,34 @@ export default function CategoryForm({
             <FormItem>
               <FormLabel>Category Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter category name" {...field} />
+                <Input
+                  placeholder="Enter category name"
+                  {...field}
+                  className="w-full"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <div className="flex justify-end space-x-2">
-          <Button type="button" variant="outline" onClick={onCancel}>
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end space-y-2 space-y-reverse sm:space-y-0 sm:space-x-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            className="w-full sm:w-auto"
+          >
             Cancel
           </Button>
-          <Button type="submit" disabled={isLoading}>
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full sm:w-auto"
+          >
             {isLoading ? "Saving..." : initialData ? "Update" : "Create"}
           </Button>
         </div>
       </form>
     </Form>
-  )
+  );
 }

@@ -74,9 +74,11 @@ export default function CategoryList({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Category List</h2>
-        <Button onClick={() => setIsOpen(true)}>+ NEW</Button>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
+        <h2 className="text-xl sm:text-2xl font-bold">Category List</h2>
+        <Button onClick={() => setIsOpen(true)} className="w-full sm:w-auto">
+          + NEW
+        </Button>
       </div>
 
       <DataTable
@@ -88,7 +90,7 @@ export default function CategoryList({
       />
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto sm:max-h-[initial]">
           <DialogHeader>
             <DialogTitle>
               {editingCategory ? "Edit Category" : "Add New Category"}
