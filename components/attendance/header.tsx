@@ -383,13 +383,14 @@ export default function DashboardHeader({
               </div>
               <DropdownMenuSeparator />
               <div className="p-2">
+                <Link href="./manage">
                 <Button
                   variant="secondary"
                   className="w-full justify-start"
-                  onClick={() => router.push("/account")}
                 >
                   MANAGE ACCOUNT
                 </Button>
+                </Link>
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem
